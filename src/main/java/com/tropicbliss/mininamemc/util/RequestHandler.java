@@ -1,6 +1,8 @@
 package com.tropicbliss.mininamemc.util;
 
 import com.google.gson.Gson;
+import com.tropicbliss.mininamemc.util.exceptions.PlayerNotFoundException;
+import com.tropicbliss.mininamemc.util.exceptions.RequestException;
 import com.tropicbliss.mininamemc.util.mojang.MojangResponse;
 import java.io.IOException;
 import java.net.URI;
@@ -28,16 +30,19 @@ public class RequestHandler {
     return instance;
   }
 
-  public MojangResponse sendMojangRequest(Name name)
-      throws URISyntaxException, IOException, InterruptedException {
+  public MojangResponse sendMojangRequest(String name)
+      throws URISyntaxException, IOException, InterruptedException, PlayerNotFoundException, RequestException {
     URI url = new URI("https://api.ashcon.app/mojang/v2/user/" + name);
-    String body = send(url);
-    return new Gson().fromJson(body, MojangResponse.class);
-  }
-
-  private String send(URI url) throws IOException, InterruptedException {
     HttpRequest req = HttpRequest.newBuilder().uri(url).build();
     HttpResponse<String> res = client.send(req, BodyHandlers.ofString());
-    return res.body();
+    int status = res.statusCode();
+    if (status == 400 || status == 404) {
+      throw new PlayerNotFoundException(name);
+    }
+    if (status != 200) {
+      throw new RequestException(res.statusCode());
+    }
+    String body = res.body();
+    return new Gson().fromJson(body, MojangResponse.class);
   }
 }

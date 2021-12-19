@@ -4,19 +4,17 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.tropicbliss.mininamemc.util.Name;
-import com.tropicbliss.mininamemc.util.Name.InvalidNameException;
 import com.tropicbliss.mininamemc.util.RequestHandler;
+import com.tropicbliss.mininamemc.util.exceptions.PlayerNotFoundException;
+import com.tropicbliss.mininamemc.util.exceptions.RequestException;
 import com.tropicbliss.mininamemc.util.mojang.MojangResponse;
 import com.tropicbliss.mininamemc.util.mojang.MojangResponse.Textures;
 import com.tropicbliss.mininamemc.util.mojang.MojangResponse.Username;
-import java.awt.TextComponent;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.ClickEvent.Action;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -31,10 +29,9 @@ public class PlayerInfoCommand {
                 StringArgumentType.getString(context, "player"))))));
   }
 
-  public static int run(ServerCommandSource source, String nameStr)
+  public static int run(ServerCommandSource source, String name)
       throws CommandSyntaxException {
     try {
-      Name name = new Name(nameStr);
       RequestHandler handler = RequestHandler.getInstance();
       MojangResponse response = handler.sendMojangRequest(name);
       source.sendFeedback(new LiteralText("UUID: " + response.getUuid()), true);
@@ -74,11 +71,10 @@ public class PlayerInfoCommand {
         source.sendFeedback(new LiteralText(""), true);
         source.sendFeedback(new LiteralText("Created at: " + response.getCreatedAt()), true);
       }
-    } catch (InvalidNameException e) {
-      throw new SimpleCommandExceptionType(new LiteralText(e.toString())).create();
+    } catch (PlayerNotFoundException | RequestException e) {
+      throw new SimpleCommandExceptionType(new LiteralText(e.getMessage())).create();
     } catch (Exception e) {
-      throw new SimpleCommandExceptionType(
-          new TranslatableText("Failed to get player info for " + nameStr)).create();
+      throw new SimpleCommandExceptionType(new LiteralText("An exception occurred")).create();
     }
     return 1;
   }
