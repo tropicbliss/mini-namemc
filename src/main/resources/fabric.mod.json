@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "mininamemc",
+  "version": "${version}",
+
+  "name": "MiniNameMC",
+  "description": "This mod provides info about a specific Minecraft player",
+  "authors": [
+    "tropicbliss"
+  ],
+  "contact": {
+    "homepage": "https://github.com/tropicbliss/mininamemc",
+    "sources": "https://github.com/tropicbliss/mininamemc"
+  },
+
+  "license": "MIT",
+  "icon": "assets/mininamemc/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.tropicbliss.mininamemc.MiniNameMCMod"
+    ]
+  },
+  "mixins": [
+    "mininamemc.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

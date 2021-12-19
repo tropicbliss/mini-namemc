@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.tropicbliss.mininamemc.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+  ],
+  "client": [
+    "MiniNameMCMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
